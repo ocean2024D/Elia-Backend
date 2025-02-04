@@ -54,9 +54,32 @@ const me = async (req, res) => {
     
     
 }
+const deleteUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Vérifier si l'ID est valide
+        const mongoose = require("mongoose");
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            throw new APIError("ID utilisateur invalide", 400);
+        }
+
+        // Supprimer l'utilisateur
+       const deletedUser = await user.findByIdAndDelete(id);
+
+        if (!deletedUser) {
+            throw new APIError("Utilisateur non trouvé", 404);
+        } 
+
+        return new Response(null, "Utilisateur supprimé avec succès").succes(res);
+    } catch (error) {
+        res.status(500).json({ message: "Erreur lors de la suppression de l'utilisateur", error: error.message });
+    }
+};
 
 module.exports = {
     login, 
     register,
-    me
+    me,
+    deleteUser
 }
