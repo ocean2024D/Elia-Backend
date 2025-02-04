@@ -1,13 +1,20 @@
-const router = require("express").Router()
-const { login, register, me,deleteUser } = require("../controllers/authController")
-const authValidation = require("../middelwares/validations/authValidation")
-const {tokenCheck} = require("../middelwares/auth")
+const router = require("express").Router();
+const {
+  login,
+  register,
+  me,
+  deleteUser,
+  getUsers,
+} = require("../controllers/authController");
+const authValidation = require("../middelwares/validations/authValidation");
+const { tokenCheck } = require("../middelwares/auth");
 
-router.post("/login", authValidation.login, login)
+router.post("/login", authValidation.login, login);
 
-router.post("/register", register, authValidation.register, register)
+router.post("/register", register, authValidation.register, register);
 
-router.get("/me", tokenCheck, me)
-
+router.get("/me", tokenCheck, me);
+router.get("/user", getUsers);
 router.delete("/user/:id", deleteUser);
-module.exports = router
+
+module.exports = router;
