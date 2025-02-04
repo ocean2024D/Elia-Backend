@@ -17,12 +17,6 @@ const userSchema = new mongoose.Schema({
     zone : {
         type: String,
     },
-    isOnDuty: {Boolean},
-        lastname : {
-        type : String, 
-        required: true, 
-        trim: true
-    },  
     email : {
         type : String, 
         required: true, 
