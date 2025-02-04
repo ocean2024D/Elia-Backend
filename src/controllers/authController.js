@@ -1,4 +1,4 @@
-const user = require("../models/user.model")
+const user = require("../models/userModel")
 const bycrypt = require("bcrypt");
 const APIError = require("../utils/errors");
 const Response = require("../utils/response");

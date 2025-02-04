@@ -1,6 +1,6 @@
 const router = require("express").Router()
-const { login, register, me } = require("../controllers/auth.controller")
-const authValidation = require("../middelwares/validations/auth.validation")
+const { login, register, me } = require("../controllers/authController")
+const authValidation = require("../middelwares/validations/authValidation")
 const {tokenCheck} = require("../middelwares/auth")
 
 router.post("/login", authValidation.login, login)
