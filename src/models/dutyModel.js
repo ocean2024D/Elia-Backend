@@ -1,7 +1,9 @@
 const mongoose = require("mongoose")
 
 const DutySchema = new mongoose.Schema({
-    date: Date, 
+   startDate: Date,
+   
+   endDate:Date,
 
     startTime: String, 
 
@@ -10,7 +12,12 @@ const DutySchema = new mongoose.Schema({
     zone : {
         type: String,
     },
-
+    status: {
+        type: String,
+        enum: ["working", "sick", "on-leave"],
+        default : "working"
+    },
+  
 /*   week: {
         type: Number
     },  */ // Nico a dit que ce n'était pas nécessaire car il y a déjà la date

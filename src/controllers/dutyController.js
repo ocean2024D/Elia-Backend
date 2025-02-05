@@ -25,7 +25,8 @@ const getDutiesForUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
+//Change with hours---> waiting modifications
+// ____________________________________________________________________________________
 const deleteDutiesForUser = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -46,7 +47,7 @@ const deleteDutiesForUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
+// __________________________________________________________________________________________________
 const updateDutiesForUser = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -100,11 +101,14 @@ const getUserWithDuties = async (req, res) => {
     res.status(200).json({
       username: userD.name,
       duties: duties,
+      status :duties.status,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
+
 
 module.exports = {
   Duties,
@@ -113,4 +117,5 @@ module.exports = {
   updateDutiesForUser,
   getDutyById,
   getUserWithDuties,
+
 };
