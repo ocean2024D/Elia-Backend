@@ -7,9 +7,9 @@ const dutydd = require("./dutyRoutes");
 const auth = require("./authRoutes");
 
 
-router.use('/dutyExchange', dutyExchangeRoutes)
-router.use('/users', auth);
-router.use('/duties', dutydd);
+router.use(dutyExchangeRoutes);
+router.use(auth);
+router.use(dutydd);
 
 
 module.exports = router;
