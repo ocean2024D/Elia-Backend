@@ -11,9 +11,9 @@ const DutySchema = new mongoose.Schema({
         type: String,
     },
 
-  week: {
+/*   week: {
         type: Number
-    }, 
+    },  */ // Nico a dit que ce n'était pas nécessaire car il y a déjà la date
 
     assignedUser: { 
         type: mongoose.Schema.Types.ObjectId, ref: 'User' 
