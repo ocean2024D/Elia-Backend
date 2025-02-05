@@ -17,4 +17,9 @@ router.get("/me", tokenCheck, me);
 router.get("/user", getUsers);
 router.delete("/user/:id", deleteUser);
 
+// Protected Route for Home
+router.get("/", tokenCheck);
+
+// Another Protected Route for /home
+router.get("/home", tokenCheck);
 module.exports = router;
