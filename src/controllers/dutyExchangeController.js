@@ -37,9 +37,36 @@ const createDutyExchange = async (req, res) => {
       res.status(500).json({ message: error.message });
     }
   };
+  //______________________________________________________________________________________
   
+// POST - Accept a duty exchange request
+const acceptDutyRequest = async (req, res) => {
+  try {
+    const dutyExchange = await DutyExchange.findById(req.params.id);
+
+    if (!dutyExchange || dutyExchange.status !== 'pending') {
+      return res.status(404).send('No valid offer found');
+    }
+
+    dutyExchange.status = 'accepted'; //
+    dutyExchange.acceptingUser = req.body.acceptingUserId;
+
+    await dutyExchange.save();
+    res.status(200).send('Duty exchange accepted!');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('An error occurred');
+  }
+};
+
+
+
+
+
   module.exports = {
     createDutyExchange,
     getAllDutyExchanges,
     getDutyExchangeById,
+    acceptDutyRequest,
+  
   };

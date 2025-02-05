@@ -11,7 +11,7 @@ const DutyExchangeSchema = new mongoose.Schema({
 
     endTime: String,
 
-    statusOfRequest: {
+    status: {
         type: String,
         enum: ['pending', 'accepted', 'rejected'],//enum only these 3 VALUES CAN BE USED
         default: 'pending'                         
