@@ -12,10 +12,10 @@ const DutyExchangeSchema = new mongoose.Schema({
     endTime: String,
 
     requestingUser: { 
-        type: mongoose.Schema.Types.ObjectId, ref: 'User' 
+        type: mongoose.Schema.Types.ObjectId, ref: 'user' 
     },
     acceptingUser: { 
-        type: mongoose.Schema.Types.ObjectId, ref: 'User' 
+        type: mongoose.Schema.Types.ObjectId, ref: 'user' 
     },
 }, {collection: "dutiesExchange", timestamps: true})
 
