@@ -1,3 +1,4 @@
+const User = require('../models/userModel');
 const DutyExchange = require("../models/dutyExchangeModel");
 
 
@@ -52,7 +53,22 @@ const acceptDutyRequest = async (req, res) => {
     dutyExchange.acceptingUser = req.body.acceptingUserId;
 
     await dutyExchange.save();
-    res.status(200).send('Duty exchange accepted!');
+// Récupération des utilisateurs
+    const requestingUser = await User.findById(dutyExchange.requestingUser);
+    const acceptingUser = await User.findById(dutyExchange.acceptingUser);
+
+    if (!requestingUser || !acceptingUser) {
+      return res.status(404).send("One or both users not found");
+    }
+
+    // Mise à jour des heures
+    requestingUser.negativeHours += 1; // 1 à modifier en fonction du nombre d'heures échangées
+    acceptingUser.positiveHours += 1; 
+
+    await requestingUser.save();
+    await acceptingUser.save();
+
+    res.status(200).send('Duty exchange accepted and hours updated!');
   } catch (err) {
     console.error(err);
     res.status(500).send('An error occurred');
