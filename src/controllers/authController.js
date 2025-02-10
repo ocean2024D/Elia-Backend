@@ -6,18 +6,39 @@ const Response = require("../utils/response");
 const { createToken } = require("../middelwares/auth");
 
 const login = async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  const userInfo = await user.findOne({ email });
+    const userInfo = await user.findOne({ email });
 
-  if (!userInfo) throw new APIError("Email ou mot de passe incorrecte");
+    if (!userInfo) {
+      throw new APIError("Email ou mot de passe incorrecte", 401);
+    }
 
-  const comparePassword = await bycrypt.compare(password, userInfo.password);
+    const comparePassword = await bycrypt.compare(password, userInfo.password);
+    if (!comparePassword) {
+      throw new APIError("Email ou mot de passe incorrecte", 401);
+    }
+    // Generate JWT token
+    const token = createToken(userInfo);
 
-  if (!comparePassword)
-    throw new APIError("Email ou mot de passe incorrecte", 401);
-
-  createToken(userInfo, res);
+    //  Send user data along with the token needed for fetch and populate homepage
+    return res.json({
+      succes: true,
+      token,
+      user: {
+        id: userInfo._id,
+        name: userInfo.name,
+        lastname: userInfo.lastname,
+        email: userInfo.email,
+        zone: userInfo.zone,
+        isAdmin: userInfo.isAdmin,
+      },
+      message: "Réussi",
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
 };
 
 const register = async (req, res) => {
@@ -64,12 +85,10 @@ const deleteUser = async (req, res) => {
 
     return new Response(null, "Utilisateur supprimé avec succès").succes(res);
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        message: "Erreur lors de la suppression de l'utilisateur",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "Erreur lors de la suppression de l'utilisateur",
+      error: error.message,
+    });
   }
 };
 
@@ -79,12 +98,10 @@ const getUsers = async (req, res) => {
     const users = await user.find();
     res.json(users);
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        message: "An error occurred while fetching users",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "An error occurred while fetching users",
+      error: error.message,
+    });
   }
 };
 
