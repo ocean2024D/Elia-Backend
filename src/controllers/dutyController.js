@@ -1,7 +1,7 @@
 const user = require("../models/userModel");
 const Duty = require("../models/dutyModel");
 
-const Duties = async (req, res) => {
+const createDuties = async (req, res) => {
   try {
     const newDuty = new Duty(req.body);
     const savedDuty = await newDuty.save();
@@ -123,7 +123,7 @@ const getAllDuties = async (req, res) => {
 
 
 module.exports = {
-  Duties,
+  createDuties,
   getDutiesForUser,
   deleteDutiesForUser,
   updateDutiesForUser,

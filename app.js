@@ -4,8 +4,9 @@ const app = express()
 require("dotenv").config()
 require("./src/db/dbConnection")
 const port = process.env.PORT || 5001
-const router = require("./src/routers")
-
+const authRoutes = require("./src/routers/authRoutes")
+const dutyExchangeRoutes = require("./src/routers/dutyExchangeRoutes")
+const dutyRoutes = require("./src/routers/dutyRoutes")
 const errorHandlerMiddleware = require("./src/middelwares/errorHandler")
 const cors = require("cors")
 //_____________________________________________________
@@ -49,8 +50,9 @@ app.use(cors({
 }));
 
 
-app.use("/api", router)
-
+app.use("/api/auth", authRoutes)
+app.use("/api/dutyExchange", dutyExchangeRoutes)
+app.use("/api/duties", dutyRoutes)
 
 app.get("/", (req, res) => {
     res.json({
