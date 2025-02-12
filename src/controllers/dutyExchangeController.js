@@ -1,4 +1,4 @@
-// const dutyExchangeModel = require("../models/dutyExchangeModel");
+const User = require('../models/userModel');
 const DutyExchange = require("../models/dutyExchangeModel");
 const Duty = require("../models/dutyModel");
 
@@ -9,9 +9,36 @@ const createDutyExchange = async (req, res) => {
     const savedDutyExchange = await newDutyExchange.save();
     res.status(201).json(savedDutyExchange);
   } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+  res.status(500).json({ message: error.message });
+  };
+    // const dutyExchange = await DutyExchange.findById(req.params.id);
+
+    // if (!dutyExchange || dutyExchange.status !== 'pending') {
+    //   return res.status(404).send('No valid offer found');
+    // }
+
+    // dutyExchange.status = 'accepted'; //
+    // dutyExchange.acceptingUser = req.body.acceptingUserId;
+
+    // await dutyExchange.save();
+// Récupération des utilisateurs
+    const requestingUser = await User.findById(dutyExchange.requestingUser);
+    const acceptingUser = await User.findById(dutyExchange.acceptingUser);
+
+    if (!requestingUser || !acceptingUser) {
+      return res.status(404).send("One or both users not found");
+    }
+
+    // Mise à jour des heures
+    requestingUser.negativeHours += 1; // 1 à modifier en fonction du nombre d'heures échangées
+    acceptingUser.positiveHours += 1; 
+
+    await requestingUser.save();
+    await acceptingUser.save();
+
+    res.status(200).send('Duty exchange accepted and hours updated!');
+  } 
+
 
 // GET - Récupérer toutes les demandes d'échange de garde
 const getAllDutyExchanges = async (req, res) => {
