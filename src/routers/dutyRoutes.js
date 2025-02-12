@@ -6,6 +6,7 @@ const {
   updateDutiesForUser,
   getDutyById,
   getUserWithDuties,
+  getAllDuties,
 } = require("../controllers/dutyController");
 
 router.post("/duties", Duties);
@@ -32,5 +33,6 @@ router.put(
 router.get("/duties/:userId", getDutyById);
 
 router.get("/user/:userId/duties", getUserWithDuties);
+router.get("/duties",getAllDuties )
 
 module.exports = router;

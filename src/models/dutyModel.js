@@ -1,21 +1,44 @@
 const mongoose = require("mongoose")
 
 const DutySchema = new mongoose.Schema({
-   startDate: Date,
-   
-   endDate:Date,
+    
+  startWeek: {
+      type: Date,
+  
+    },
+    endWeek: {
+      type: Date,
+  
+    },
+    dailyShifts: [
+      {
+        date: {
+          type: Date,
+  
+        },
+        startTime : {
+          type:Date,
 
-    startTime: String, 
+        },
+        endTime: {
+          type: Date
+        },
+  
+        assignedUser: { 
+          type: mongoose.Schema.Types.ObjectId, 
+          ref: 'User' },
 
-    endTime: String,
+          status: {
+            type: String,
+      enum: ["garde","working","sick","vacation","others"], 
+      default : "garde"
+        },
+      }
+  
+    ],
 
     zone : {
         type: String,
-    },
-    status: {
-        type: String,
-        enum: ["working", "sick", "on-leave"],
-        default : "working"
     },
   
 /*   week: {

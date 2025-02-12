@@ -23,6 +23,15 @@ const userSchema = new mongoose.Schema({
         trim: true, 
         unique : true
     },  
+    positiveHours: {
+        type: Number,
+        default: 0
+    },
+    negativeHours: {
+        type: Number,
+        default: 0
+    }
+
 }, {collection: "users", timestamps: true})
 
 const user = mongoose.model("user", userSchema)

@@ -108,6 +108,18 @@ const getUserWithDuties = async (req, res) => {
   }
 };
 
+const getAllDuties = async (req, res) => {
+  try {
+    const duties = await Duty.find();
+    res.json(duties);
+  } catch (error) {
+    res.status(500).json({
+      message: "An error occurred while fetching duties",
+      error: error.message,
+    });
+  }
+};
+
 
 
 module.exports = {
@@ -117,5 +129,6 @@ module.exports = {
   updateDutiesForUser,
   getDutyById,
   getUserWithDuties,
+  getAllDuties,
 
 };
