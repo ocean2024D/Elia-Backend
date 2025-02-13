@@ -67,8 +67,6 @@ app.use(errorHandlerMiddleware)
 
 
 
-
-
 app.listen(port, () => {
     console.log(`Le server fonctionne sur le port ${port}`);
     

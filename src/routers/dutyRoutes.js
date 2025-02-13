@@ -7,6 +7,7 @@ const {
   getDutyById,
   getUserWithDuties,
   getAllDuties,
+  requestDutyExchange,
 } = require("../controllers/dutyController");
 
 router.post("/", createDuties);

@@ -16,12 +16,12 @@ const DutyExchangeSchema = new mongoose.Schema({
     acceptingUser: { 
         type: mongoose.Schema.Types.ObjectId, ref: 'user' 
     },  
-    shiftDays: [
+    Days: [
       {
         date: { type: Date },
         requestStartTime : {type : Date },
         requestEndTime : {type : Date},
-         assignedUser: {
+        assignedUser: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "user",
         },
@@ -33,6 +33,7 @@ const DutyExchangeSchema = new mongoose.Schema({
       },
     ],
     reasonOfExChange:{
+      type: String,
       enum: ["sick","vacation","others"], 
     }
 }, {collection: "dutiesExchange", timestamps: true})

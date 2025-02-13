@@ -2,6 +2,7 @@ const User = require('../models/userModel');
 const DutyExchange = require("../models/requestModel");
 const Duty = require("../models/dutyModel");
 
+
 // POST - Créer une nouvelle demande d'échange de garde
 const createDutyExchange = async (req, res) => {
   try {

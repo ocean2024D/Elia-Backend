@@ -2,53 +2,28 @@ const mongoose = require("mongoose")
 
 const DutySchema = new mongoose.Schema({
     
-  startWeek: {
-      type: Date,
-  
-    },
-    endWeek: {
-      type: Date,
-  
-    },
-    dailyShifts: [
-      {
-        date: {
-          type: Date,
-  
-        },
-        startTime : {
-          type:Date,
+  startDate: { type: Date, required: true },
+  endDate: { type: Date, required: true },
+  assignedUser: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  zone : { type: String, required: true },
+  days: [
+    {
+        date: { type: Date, required: true },
+        startTime: { type: Date, required: true },
+        endTime: { type: Date, required: true },
 
-        },
-        endTime: {
-          type: Date
-        },
-  
         assignedUser: { 
-          type: mongoose.Schema.Types.ObjectId, 
-          ref: 'User' },
-
-          status: {
-            type: String,
-      enum: ["garde","working","sick","vacation","others"], 
-      default : "garde"
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: 'User' 
         },
-      }
-  
-    ],
 
-    zone : {
-        type: String,
-    },
-  
-/*   week: {
-        type: Number
-    },  */ // Nico a dit que ce n'était pas nécessaire car il y a déjà la date
-
-    assignedUser: { 
-        type: mongoose.Schema.Types.ObjectId, ref: 'User' 
-    },
-
+        status: {
+            type: String,
+            enum: ["garde", "working", "sick", "vacation", "others"], 
+            default: "garde"
+        },
+    }
+],
 }, {collection: "duties", timestamps: true})
 
 module.exports = mongoose.model('Duty', DutySchema);
