@@ -5,7 +5,8 @@ const {
   getDutyExchangeById,
   acceptDutyRequest,
   rejectDutyRequest,
-} = require("../controllers/dutyExchangeController");
+} = require("../controllers/requestController");
+
 
 
 router.post("/", createDutyExchange);

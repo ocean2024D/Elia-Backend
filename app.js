@@ -5,7 +5,7 @@ require("dotenv").config()
 require("./src/db/dbConnection")
 const port = process.env.PORT || 5001
 const authRoutes = require("./src/routers/authRoutes")
-const dutyExchangeRoutes = require("./src/routers/dutyExchangeRoutes")
+const dutyExchangeRoutes = require("./src/routers/RequestRoutes")
 const dutyRoutes = require("./src/routers/dutyRoutes")
 const errorHandlerMiddleware = require("./src/middelwares/errorHandler")
 const cors = require("cors")
