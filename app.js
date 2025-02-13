@@ -67,6 +67,9 @@ app.use(errorHandlerMiddleware)
 
 
 
+const { initializeSchedule } = require("./utils/dutyScheduler");
+
+initializeSchedule();
 
 
 app.listen(port, () => {
