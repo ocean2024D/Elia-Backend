@@ -1,5 +1,5 @@
 const User = require('../models/userModel');
-const DutyExchange = require("../models/dutyExchangeModel");
+const DutyExchange = require("../models/requestModel");
 const Duty = require("../models/dutyModel");
 
 
@@ -8,9 +8,9 @@ const createDutyExchange = async (req, res) => {
   try {
     const newDutyExchange = new DutyExchange(req.body);
     const savedDutyExchange = await newDutyExchange.save();
-    res.status(201).json(savedDutyExchange);
+   return res.status(201).json(savedDutyExchange);
   } catch (error) {
-  res.status(500).json({ message: error.message });
+ res.status(500).json({ message: error.message });
   };
     // const dutyExchange = await DutyExchange.findById(req.params.id);
 
@@ -50,16 +50,16 @@ const getAllDutyExchanges = async (req, res) => {
 
     dutyExchanges.forEach((exchange) => {
       if (exchange.requestingUser) {
-        exchange.requestingUserName = exchange.requestingUser.name;
+        exchange.requestingUser = exchange.requestingUser.name;
       }
       if (exchange.acceptingUser) {
-        exchange.acceptingUserName = exchange.acceptingUser.name; 
+        exchange.acceptingUser = exchange.acceptingUser.name; 
         delete exchange.acceptingUser; 
       }
     });
-    res.status(200).json(dutyExchanges);
+   return res.status(200).json(dutyExchanges);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+   return res.status(500).json({ message: error.message });
   }
 };
 
@@ -73,9 +73,9 @@ const getDutyExchangeById = async (req, res) => {
       return res.status(404).json({ message: "Duty exchange not found" });
     }
 
-    res.status(200).json(dutyExchange);
+   return res.status(200).json(dutyExchange);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 const mongoose = require('mongoose');
@@ -84,7 +84,6 @@ const mongoose = require('mongoose');
 
 
 const acceptDutyRequest = async (req, res) => {
-
   try {
     const requestId = req.params.id;
     const dutyExchange = await DutyExchange.findById(requestId)
@@ -96,43 +95,43 @@ const acceptDutyRequest = async (req, res) => {
       return res.status(404).send("No valid offer found");
     }
 
-   
     if (!req.body.acceptingUser || !mongoose.Types.ObjectId.isValid(req.body.acceptingUser)) {
       return res.status(400).send("Valid accepting user ID is required");
     }
     
     dutyExchange.acceptingUser = req.body.acceptingUser;
-    dutyExchange.status = "accepted";//ca doit etre dynamique
+    dutyExchange.status = "accepted"; 
     await dutyExchange.save();
 
-
-
+    // Fetch requesting duty and log it
     const requestingDuty = await Duty.findById(dutyExchange.duty_id);
-    console.log(` Duty inside  : ${requestingDuty}`)
+    console.log("Requested Duty:", requestingDuty);
     if (!requestingDuty) {
       return res.status(404).send("Requesting duty not found");
     }
+    if (!requestingDuty.dailyShifts || requestingDuty.dailyShifts.length === 0) {
+      return res.status(404).send("No dailyShifts found in requesting duty");
+    }
 
- 
     dutyExchange.shiftDays.forEach((shift) => {
-      console.log(`dutyExchangeRequest inside : ${shift}`)
+      console.log(`dutyExchangeRequest inside: ${JSON.stringify(shift)}`);
       let dutyShift = requestingDuty.dailyShifts.find(d => d.date.toISOString() === shift.date.toISOString());
-      console.log(dutyShift)
+      console.log(`dutyShift: ${JSON.stringify(dutyShift)}`);
       if (dutyShift) {
-        dutyShift.assignedUser = req.body.acceptingUser; 
-         dutyShift.status = "sick"; 
-  
+        dutyShift.assignedUser = req.body.acceptingUser;
+        dutyShift.status = "sick";
       }
     });
 
     await requestingDuty.save();
-    res.send("Duty exchange accepted and shifts updated successfully");
+    return res.send("Duty exchange accepted and shifts updated successfully");
 
-  } catch (error) {0
+  } catch (error) {
     console.error("Error updating duty exchange:", error);
-    res.status(500).send("Internal server error");
+    return res.status(500).send("Internal server error");
   }
-}; 
+};
+
 module.exports = {
   createDutyExchange,
   getAllDutyExchanges,
