@@ -104,6 +104,24 @@ const getUsers = async (req, res) => {
     });
   }
 };
+// Fetch users by zone
+const getUsersByZone = async (req, res) => {
+  try {
+    const { zone } = req.params;
+    const usersInZone = await user.find({ zone });
+
+    if (!usersInZone || usersInZone.length === 0) {
+      throw new APIError("No users found for the given zone", 404);
+    }
+
+    return res.json(usersInZone);
+  } catch (error) {
+    res.status(500).json({
+      message: "An error occurred while fetching users by zone",
+      error: error.message,
+    });
+  }
+};
 
 module.exports = {
   login,
@@ -111,4 +129,5 @@ module.exports = {
   me,
   deleteUser,
   getUsers,
+  getUsersByZone,
 };
