@@ -67,11 +67,6 @@ app.use(errorHandlerMiddleware)
 
 
 
-const { initializeSchedule } = require("./utils/dutyScheduler");
-
-initializeSchedule();
-
-
 app.listen(port, () => {
     console.log(`Le server fonctionne sur le port ${port}`);
     

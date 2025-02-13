@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Duty = require("../models/dutyModel");
 const User = require("../models/userModel");
 
-// 📌 Fonction pour générer un planning de gardes pour 6 semaines
+// Fonction pour générer un planning de gardes pour 6 semaines
 const generateDutySchedule = async () => {
     try {
         const users = await User.find({});
@@ -32,24 +32,24 @@ const generateDutySchedule = async () => {
         }
 
         await Duty.insertMany(duties);
-        console.log("✅ Planning de gardes généré avec succès !");
+        console.log("Planning de gardes généré avec succès !");
     } catch (error) {
-        console.error("❌ Erreur lors de la génération du planning :", error);
+        console.error("Erreur lors de la génération du planning :", error);
     }
 };
 
-// 📌 Fonction pour initialiser le planning si aucune garde n’existe
+// Fonction pour initialiser le planning si aucune garde n’existe
 const initializeSchedule = async () => {
     try {
         const existingDuties = await Duty.countDocuments();
         if (existingDuties === 0) {
-            console.log("📅 Aucun planning existant, création du planning...");
+            console.log("Aucun planning existant, création du planning...");
             await generateDutySchedule();
         } else {
-            console.log("📅 Planning déjà existant, aucune action nécessaire.");
+            console.log("Planning déjà existant, aucune action nécessaire.");
         }
     } catch (error) {
-        console.error("❌ Erreur lors de l'initialisation du planning :", error);
+        console.error("Erreur lors de l'initialisation du planning :", error);
     }
 };
 
