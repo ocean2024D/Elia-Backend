@@ -2,7 +2,6 @@ const User = require('../models/userModel');
 const DutyExchange = require("../models/requestModel");
 const Duty = require("../models/dutyModel");
 
-
 // POST - Créer une nouvelle demande d'échange de garde
 const createDutyExchange = async (req, res) => {
   try {
@@ -23,8 +22,8 @@ const createDutyExchange = async (req, res) => {
 
     // await dutyExchange.save();
 // Récupération des utilisateurs
-    const requestingUser = await User.findById(dutyExchange.requestingUser);
-    const acceptingUser = await User.findById(dutyExchange.acceptingUser);
+    const requestingUser = await User.findById(DutyExchange.requestingUser);
+    const acceptingUser = await User.findById(DutyExchange.acceptingUser);
 
     if (!requestingUser || !acceptingUser) {
       return res.status(404).send("One or both users not found");
@@ -86,10 +85,12 @@ const mongoose = require('mongoose');
 const acceptDutyRequest = async (req, res) => {
   try {
     const requestId = req.params.id;
+
+   
     const dutyExchange = await DutyExchange.findById(requestId)
       .populate("requestingUser", "name")
       .populate("acceptingUser", "name")
-      .populate("shiftDays.assignedUser", "name");
+      .populate("Days.assignedUser", "name");
 
     if (!dutyExchange || dutyExchange.status !== "pending") {
       return res.status(404).send("No valid offer found");
@@ -98,28 +99,33 @@ const acceptDutyRequest = async (req, res) => {
     if (!req.body.acceptingUser || !mongoose.Types.ObjectId.isValid(req.body.acceptingUser)) {
       return res.status(400).send("Valid accepting user ID is required");
     }
-    
+
     dutyExchange.acceptingUser = req.body.acceptingUser;
     dutyExchange.status = "accepted"; 
     await dutyExchange.save();
 
-    // Fetch requesting duty and log it
+
     const requestingDuty = await Duty.findById(dutyExchange.duty_id);
     console.log("Requested Duty:", requestingDuty);
+
     if (!requestingDuty) {
       return res.status(404).send("Requesting duty not found");
     }
-    if (!requestingDuty.dailyShifts || requestingDuty.dailyShifts.length === 0) {
+
+    if (!requestingDuty.days || requestingDuty.days.length === 0) {
       return res.status(404).send("No dailyShifts found in requesting duty");
     }
 
-    dutyExchange.shiftDays.forEach((shift) => {
+    dutyExchange.Days.forEach((shift) => {
       console.log(`dutyExchangeRequest inside: ${JSON.stringify(shift)}`);
-      let dutyShift = requestingDuty.dailyShifts.find(d => d.date.toISOString() === shift.date.toISOString());
+
+     
+      let dutyShift = requestingDuty.days.find(d => d.date.toISOString() === shift.date.toISOString());
       console.log(`dutyShift: ${JSON.stringify(dutyShift)}`);
+
       if (dutyShift) {
-        dutyShift.assignedUser = req.body.acceptingUser;
-        dutyShift.status = "sick";
+        dutyShift.acceptedUser = req.body.acceptingUser;
+        dutyShift.status = "sick"; 
       }
     });
 

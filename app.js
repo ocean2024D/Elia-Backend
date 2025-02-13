@@ -7,6 +7,7 @@ const port = process.env.PORT || 5001
 const authRoutes = require("./src/routers/authRoutes")
 const dutyExchangeRoutes = require("./src/routers/RequestRoutes")
 const dutyRoutes = require("./src/routers/dutyRoutes")
+const dutySchedulerRoutes = require("./src/routers/dutySchedulerRoutes")
 const errorHandlerMiddleware = require("./src/middelwares/errorHandler")
 const cors = require("cors")
 //_____________________________________________________
@@ -53,6 +54,7 @@ app.use(cors({
 app.use("/api/auth", authRoutes)
 app.use("/api/dutyExchange", dutyExchangeRoutes)
 app.use("/api/duties", dutyRoutes)
+app.use("/api/dutyScheduler",dutySchedulerRoutes)
 
 app.get("/", (req, res) => {
     res.json({
