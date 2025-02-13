@@ -1,7 +1,7 @@
 const user = require("../models/userModel");
 const Duty = require("../models/dutyModel");
 
-const Duties = async (req, res) => {
+const createDuties = async (req, res) => {
   try {
     const newDuty = new Duty(req.body);
     const savedDuty = await newDuty.save();
@@ -108,14 +108,27 @@ const getUserWithDuties = async (req, res) => {
   }
 };
 
+const getAllDuties = async (req, res) => {
+  try {
+    const duties = await Duty.find();
+    res.json(duties);
+  } catch (error) {
+    res.status(500).json({
+      message: "An error occurred while fetching duties",
+      error: error.message,
+    });
+  }
+};
+
 
 
 module.exports = {
-  Duties,
+  createDuties,
   getDutiesForUser,
   deleteDutiesForUser,
   updateDutiesForUser,
   getDutyById,
   getUserWithDuties,
+  getAllDuties,
 
 };

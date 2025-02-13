@@ -8,13 +8,13 @@ const {
 } = require("../controllers/dutyExchangeController");
 
 
-router.post("/dutyExchange", createDutyExchange);
+router.post("/", createDutyExchange);
 
 
-router.get("/dutyExchange", getAllDutyExchanges);
+router.get("/", getAllDutyExchanges);
 
 
-router.get("/dutyExchange/:exchangeId", getDutyExchangeById);
+router.get("/:exchangeId", getDutyExchangeById);
 
 
 router.post('/accept/:id', acceptDutyRequest); // newObjectId we write in postman  Post  http://localhost:8080/api/accept/67a3dddd65d159d137aa4522,

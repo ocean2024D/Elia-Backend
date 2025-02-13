@@ -4,10 +4,35 @@ const app = express()
 require("dotenv").config()
 require("./src/db/dbConnection")
 const port = process.env.PORT || 5001
-const router = require("./src/routers")
-
+const authRoutes = require("./src/routers/authRoutes")
+const dutyExchangeRoutes = require("./src/routers/dutyExchangeRoutes")
+const dutyRoutes = require("./src/routers/dutyRoutes")
 const errorHandlerMiddleware = require("./src/middelwares/errorHandler")
 const cors = require("cors")
+//_____________________________________________________
+// dans le fichier app.js
+// const moment = require("moment-timezone")
+// moment.tz.setDefault("Europe/Brussels")
+
+
+// // dans le dossier utils // 
+// import moment from "moment-timezone";
+
+// moment.tz.setDefault("Europe/Brussels");
+
+// export const getBrusselsTime = () => {
+//     return moment().format("YYYY-MM-DD HH:mm:ss");
+// };
+
+
+// // import { getBrusselsTime } from "App/Utils/DateHelper";
+
+// Route.get("/", async () => {
+//     return { heure: getBrusselsTime() };
+// });
+
+
+//______________________________________________________
 
 
 //Middelwares
@@ -25,8 +50,9 @@ app.use(cors({
 }));
 
 
-app.use("/api", router)
-
+app.use("/api/auth", authRoutes)
+app.use("/api/dutyExchange", dutyExchangeRoutes)
+app.use("/api/duties", dutyRoutes)
 
 app.get("/", (req, res) => {
     res.json({
