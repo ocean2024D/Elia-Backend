@@ -22,7 +22,8 @@ const createDutyExchange = async (req, res) => {
     // dutyExchange.acceptingUser = req.body.acceptingUserId;
 
     // await dutyExchange.save();
-// Récupération des utilisateurs
+
+    // Récupération des utilisateurs
     const requestingUser = await User.findById(dutyExchange.requestingUser);
     const acceptingUser = await User.findById(dutyExchange.acceptingUser);
 

@@ -9,6 +9,8 @@ const dutyExchangeRoutes = require("./src/routers/RequestRoutes")
 const dutyRoutes = require("./src/routers/dutyRoutes")
 const errorHandlerMiddleware = require("./src/middelwares/errorHandler")
 const cors = require("cors")
+const { initializeSchedule } = require("./src/schedulers/dutyScheduler"); 
+
 //_____________________________________________________
 // dans le fichier app.js
 // const moment = require("moment-timezone")
@@ -65,6 +67,7 @@ app.get("/", (req, res) => {
 app.use(errorHandlerMiddleware)
 
 
+initializeSchedule();
 
 
 app.listen(port, () => {
