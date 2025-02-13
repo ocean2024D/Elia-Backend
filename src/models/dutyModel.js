@@ -10,7 +10,7 @@ const DutySchema = new mongoose.Schema({
       type: Date,
   
     },
-    dailyShifts: [
+    days: [
       {
         date: {
           type: Date,
