@@ -1,4 +1,4 @@
-const user = require("../models/userModel");
+const User = require("../models/userModel");
 const Duty = require("../models/dutyModel");
 
 const createDuties = async (req, res) => {
@@ -37,12 +37,10 @@ const deleteDutiesForUser = async (req, res) => {
         .json({ message: "No duties found for this user to delete" });
     }
 
-    res
-      .status(200)
-      .json({
-        message: "Duties deleted successfully",
-        deletedCount: result.deletedCount,
-      });
+    res.status(200).json({
+      message: "Duties deleted successfully",
+      deletedCount: result.deletedCount,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -101,7 +99,7 @@ const getUserWithDuties = async (req, res) => {
     res.status(200).json({
       username: userD.name,
       duties: duties,
-      status :duties.status,
+      status: duties.status,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -119,8 +117,23 @@ const getAllDuties = async (req, res) => {
     });
   }
 };
+// _______________________________________________________________________________________________________
+const getDutiesByZone = async (req, res) => {
+  try {
+    const { zone } = req.params;
 
+    if (!zone) {
+      return res.status(400).json({ message: "Zone parameter is required" });
+    }
 
+    const duties = await Duty.find({ zone }).populate("assignedUser", "name"); // Get duties for this zone
+
+    res.status(200).json(duties);
+  } catch (error) {
+    console.error("Error fetching duties by zone:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
 module.exports = {
   createDuties,
@@ -130,5 +143,5 @@ module.exports = {
   getDutyById,
   getUserWithDuties,
   getAllDuties,
-
+  getDutiesByZone,
 };
