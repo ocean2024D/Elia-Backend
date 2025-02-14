@@ -122,7 +122,6 @@ const getUsersByZone = async (req, res) => {
     });
   }
 };
-
 module.exports = {
   login,
   register,

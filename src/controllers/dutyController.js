@@ -1,7 +1,7 @@
 const user = require("../models/userModel");
 const Duty = require("../models/dutyModel");
 
-const Duties = async (req, res) => {
+const createDuties = async (req, res) => {
   try {
     const newDuty = new Duty(req.body);
     const savedDuty = await newDuty.save();
@@ -25,7 +25,8 @@ const getDutiesForUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
+//Change with hours---> waiting modifications
+// ____________________________________________________________________________________
 const deleteDutiesForUser = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -46,7 +47,7 @@ const deleteDutiesForUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
+// __________________________________________________________________________________________________
 const updateDutiesForUser = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -100,17 +101,34 @@ const getUserWithDuties = async (req, res) => {
     res.status(200).json({
       username: userD.name,
       duties: duties,
+      status :duties.status,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
+const getAllDuties = async (req, res) => {
+  try {
+    const duties = await Duty.find();
+    res.json(duties);
+  } catch (error) {
+    res.status(500).json({
+      message: "An error occurred while fetching duties",
+      error: error.message,
+    });
+  }
+};
+
+
+
 module.exports = {
-  Duties,
+  createDuties,
   getDutiesForUser,
   deleteDutiesForUser,
   updateDutiesForUser,
   getDutyById,
   getUserWithDuties,
+  getAllDuties,
+
 };

@@ -1,18 +1,20 @@
 const router = require("express").Router();
 const {
-  Duties,
+  createDuties,
   getDutiesForUser,
   deleteDutiesForUser,
   updateDutiesForUser,
   getDutyById,
   getUserWithDuties,
+  getAllDuties,
+  requestDutyExchange,
 } = require("../controllers/dutyController");
 
-router.post("/duties", Duties);
-router.get("/duties/:userId", getDutiesForUser);
+router.post("/", createDuties);
+router.get("/:userId", getDutiesForUser);
 
 router.delete(
-  "/duties/delete/:userId",
+  "/delete/:userId",
   (req, res, next) => {
     console.log("Delete request received for user ID:", req.params.userId);
     next();
@@ -21,7 +23,7 @@ router.delete(
 );
 
 router.put(
-  "/duties/update/:userId",
+  "/update/:userId",
   (req, res, next) => {
     console.log("Update request received for user ID:", req.params.userId);
     next();
@@ -29,8 +31,9 @@ router.put(
   updateDutiesForUser
 );
 
-router.get("/duties/:userId", getDutyById);
+router.get("/:userId", getDutyById);
 
 router.get("/user/:userId/duties", getUserWithDuties);
+router.get("/",getAllDuties )
 
 module.exports = router;
