@@ -13,7 +13,17 @@ const DutySchema = new mongoose.Schema({
     enum: ["guard", "working", "sick", "vacation", "others"], 
     default: "guard"
 },
+exchangeDetails: [
+  {
+    requestingUser: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    acceptingUser: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    requestStartTime: { type: Date },  
+    requestEndTime: { type: Date },    
+    reasonOfChange: { type: String },  
+    date: { type: Date }              
+  }
   
+],
   days: [
     {
         date: { type: Date, required: true },
@@ -24,12 +34,6 @@ const DutySchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId, 
             ref: 'User' 
         },
-
-        exchangeDetails: {
-            acceptingUser: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-            exchangeStart: { type: Date },
-            exchangeEnd: { type: Date },
-          },
         status: {
             type: String,
             enum: ["guard", "working", "sick", "vacation", "others"], 

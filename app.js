@@ -10,30 +10,6 @@ const dutyRoutes = require("./src/routers/dutyRoutes")
 const dutySchedulerRoutes = require("./src/routers/dutySchedulerRoutes")
 const errorHandlerMiddleware = require("./src/middelwares/errorHandler")
 const cors = require("cors")
-//_____________________________________________________
-// dans le fichier app.js
-// const moment = require("moment-timezone")
-// moment.tz.setDefault("Europe/Brussels")
-
-
-// // dans le dossier utils // 
-// import moment from "moment-timezone";
-
-// moment.tz.setDefault("Europe/Brussels");
-
-// export const getBrusselsTime = () => {
-//     return moment().format("YYYY-MM-DD HH:mm:ss");
-// };
-
-
-// // import { getBrusselsTime } from "App/Utils/DateHelper";
-
-// Route.get("/", async () => {
-//     return { heure: getBrusselsTime() };
-// });
-
-
-//______________________________________________________
 
 
 //Middelwares
