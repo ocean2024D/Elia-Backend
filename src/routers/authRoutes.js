@@ -5,6 +5,7 @@ const {
   me,
   deleteUser,
   getUsers,
+  getUsersByZone,
 } = require("../controllers/authController");
 const authValidation = require("../middelwares/validations/authValidation");
 const { tokenCheck } = require("../middelwares/auth");
@@ -22,4 +23,8 @@ router.get("/", tokenCheck);
 
 // Another Protected Route for /home
 router.get("/home", tokenCheck);
+
+// Fetch users by zone
+router.get("/user/zone/:zone", getUsersByZone);
+
 module.exports = router;
