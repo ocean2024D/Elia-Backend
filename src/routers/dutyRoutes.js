@@ -8,6 +8,7 @@ const {
   getUserWithDuties,
   getAllDuties,
   requestDutyExchange,
+  getDutiesByZone,
 } = require("../controllers/dutyController");
 
 router.post("/", createDuties);
@@ -34,6 +35,8 @@ router.put(
 router.get("/:userId", getDutyById);
 
 router.get("/user/:userId/duties", getUserWithDuties);
-router.get("/",getAllDuties )
+router.get("/", getAllDuties);
+
+router.get("/zone/:zone", getDutiesByZone);
 
 module.exports = router;
