@@ -45,7 +45,7 @@ exchangeDetails: [
       },
     ],
   },
-  { collection: "duties", timestamps: true }
+  { collection: "duties", timestamps: true,versionKey: false }
 );
 
 module.exports = mongoose.model("Duty", DutySchema);
