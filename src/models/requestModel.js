@@ -44,6 +44,6 @@ const DutyExchangeSchema = new mongoose.Schema({
     //     exchangeEnd: { type: Date }
     //   }
     // ]
-}, {collection: "dutiesExchange", timestamps: true})
+}, {collection: "dutiesExchange", timestamps: true,versionKey: false})
 
 module.exports = mongoose.model('DutyExchange', DutyExchangeSchema);

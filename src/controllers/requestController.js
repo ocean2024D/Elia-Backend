@@ -28,6 +28,7 @@ const createDutyExchange = async (req, res) => {
 
     await requestingUser.save();
     await acceptingUser.save();
+    const savedDutyExchange = await DutyExchange.create(req.body);
 
     return res.status(201).json(savedDutyExchange);
 
@@ -123,7 +124,7 @@ const acceptDutyRequest = async (req, res) => {
       let dutyShift = requestingDuty.days.find(d => d.date.toISOString() === shift.date.toISOString());
       if (dutyShift) {
         dutyShift.assignedUser = req.body.acceptingUser;
-        dutyShift.status = "sick"; 
+        dutyShift.status = shift.reasonOfChange ; 
       }
 
       const duty = await Duty.findById(dutyExchange.duty_id);
