@@ -1,5 +1,6 @@
 const { number } = require("joi");
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
+
 
 const DutySchema = new mongoose.Schema({
   weekNumber: {type:Number},
@@ -26,21 +27,25 @@ exchangeDetails: [
 ],
   days: [
     {
+
         date: { type: Date, required: true },
         startTime: { type: Date, required: false },
         endTime: { type: Date, required: false },
 
-        assignedUser: { 
-            type: mongoose.Schema.Types.ObjectId, 
-            ref: 'User' 
+        assignedUser: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "user",
         },
-        status: {
-            type: String,
-            enum: ["guard", "working", "sick", "vacation", "others"], 
-            default: "guard"
-        },
-    }
-],
-}, {collection: "duties", timestamps: true})
 
-module.exports = mongoose.model('Duty', DutySchema);
+        status: {
+          type: String,
+          enum: ["guard", "working", "sick", "vacation", "others"],
+          default: "guard",
+        },
+      },
+    ],
+  },
+  { collection: "duties", timestamps: true }
+);
+
+module.exports = mongoose.model("Duty", DutySchema);

@@ -6,6 +6,7 @@ const {
   deleteUser,
   getUsers,
   getUsersByZone,
+  getUserById,
 } = require("../controllers/authController");
 const authValidation = require("../middelwares/validations/authValidation");
 const { tokenCheck } = require("../middelwares/auth");
@@ -26,5 +27,6 @@ router.get("/home", tokenCheck);
 
 // Fetch users by zone
 router.get("/user/zone/:zone", getUsersByZone);
+router.get("/user/:id", getUserById); // New route to get user by ID
 
 module.exports = router;

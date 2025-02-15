@@ -122,6 +122,36 @@ const getUsersByZone = async (req, res) => {
     });
   }
 };
+
+const getUserById = async (req, res) => {
+  try {
+    const { id } = req.params; // Get the user ID from the URL parameter
+
+    const userInfo = await user.findById(id); // Query the database for the user
+
+    if (!userInfo) {
+      throw new APIError("User not found", 404); // If the user is not found, throw an error
+    }
+
+    // Return the user data
+    return res.json({
+      success: true,
+      user: {
+        id: userInfo._id,
+        name: userInfo.name,
+        lastname: userInfo.lastname,
+        email: userInfo.email,
+        zone: userInfo.zone,
+        isAdmin: userInfo.isAdmin,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "An error occurred while fetching user data",
+      error: error.message,
+    });
+  }
+};
 module.exports = {
   login,
   register,
@@ -129,4 +159,5 @@ module.exports = {
   deleteUser,
   getUsers,
   getUsersByZone,
+  getUserById,
 };
