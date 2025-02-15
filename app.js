@@ -6,7 +6,7 @@ require("dotenv").config()
 require("./src/db/dbConnection")
 const port = process.env.PORT || 5001
 const authRoutes = require("./src/routers/authRoutes")
-const dutyExchangeRoutes = require("./src/routers/RequestRoutes")
+const dutyExchangeRoutes = require("./src/routers/requestRoutes")
 const dutyRoutes = require("./src/routers/dutyRoutes")
 const dutySchedulerRoutes = require("./src/routers/dutySchedulerRoutes")
 const errorHandlerMiddleware = require("./src/middelwares/errorHandler")
@@ -33,7 +33,7 @@ app.use(
 
 // Define Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/dutyExchange", dutyExchangeRoutes);
+app.use("/api/dutyExchange",dutyExchangeRoutes);
 app.use("/api/duties", dutyRoutes);
 app.use("/api/dutyScheduler", dutySchedulerRoutes);
 

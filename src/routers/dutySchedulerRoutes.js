@@ -1,8 +1,4 @@
 const express = require("express");
-const {
-  initializeSchedule,
-} = require("../controllers/dutyScheduler");
-
 const router = express.Router();
 
 router.post("/initialize", async (req, res) => {

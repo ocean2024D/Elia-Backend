@@ -38,26 +38,39 @@ const createDutyExchange = async (req, res) => {
 };
 
 // GET - Récupérer toutes les demandes d'échange de garde
+
+//Endponints http://localhost:8080/api/dutyExchange?status=accepted
+// http://localhost:8080/api/dutyExchange?status=rejected
+// http://localhost:8080/api/dutyExchange?status=pending
+
 const getAllDutyExchanges = async (req, res) => {
   try {
-    const dutyExchanges = await DutyExchange.find()
+  const status = req.query.status || "pending";
+    const dutyExchanges = await DutyExchange.find({status})
       .populate("requestingUser", "name")
-      
+      .populate("acceptingUser", "name");
 
     dutyExchanges.forEach((exchange) => {
-      if (exchange.requestingUser) {
-        exchange.requestingUser = exchange.requestingUser.name;
-      }
-      if (exchange.acceptingUser) {
-        exchange.acceptingUser = exchange.acceptingUser.name; 
-        delete exchange.acceptingUser; 
-      }
-    });
-   return res.status(200).json(dutyExchanges);
-  } catch (error) {
-   return res.status(500).json({ message: error.message });
+    if (exchange.requestingUser) {
+    exchange.requestingUser = exchange.requestingUser.name;
+    }
+
+    if (exchange.acceptingUser) {
+    exchange.acceptingUser = exchange.acceptingUser.name;
+   }
+  if (exchange.chois) {
+    exchange.chois = exchange.chois;  
   }
+  });
+
+return res.status(200).json(dutyExchanges);
+} catch (error) {
+return res.status(500).json({ message: error.message });
+}
 };
+
+
+
 
 // GET - Récupérer une demande d'échange de garde par ID
 const getDutyExchangeById = async (req, res) => {
@@ -153,11 +166,9 @@ const acceptDutyRequest = async (req, res) => {
   }
 };
 
-
 module.exports = {
   createDutyExchange,
   getAllDutyExchanges,
   getDutyExchangeById,
   acceptDutyRequest,
-
 };
