@@ -81,7 +81,9 @@ const getDutyExchangeById = async (req, res) => {
     console.log("Accepting User:", req.body.acceptingUser);
     console.log("Days:", req.body.Days);
     const { exchangeId } = req.params;
-    const dutyExchange = await DutyExchange.findById(exchangeId);
+    const dutyExchange = await DutyExchange.findById(exchangeId)
+    .populate('acceptingUser', '_id name')
+    .populate('requestingUser', '_id name'); 
 
     if (!dutyExchange) {
       return res.status(404).json({ message: "Duty exchange not found" });
@@ -92,6 +94,32 @@ const getDutyExchangeById = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+const getDutyExchangesByUserId = async (req, res) => {
+  try {
+    const userId = req.params.userId; 
+    const dutyExchanges = await DutyExchange.find({
+      $or: [
+        { "requestingUser": userId },
+        { "acceptingUser": userId }
+      ]
+    })
+      .populate("requestingUser", "name")
+      .populate("acceptingUser", "name");
+
+    if (!dutyExchanges || dutyExchanges.length === 0) {
+      return res.status(404).send("No duty exchanges found for this user");
+    }
+    return res.status(200).json(dutyExchanges);
+
+  } catch (error) {
+    console.error("Error fetching duty exchanges:", error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+
+
 const mongoose = require('mongoose');
 
 
@@ -171,4 +199,5 @@ module.exports = {
   getAllDutyExchanges,
   getDutyExchangeById,
   acceptDutyRequest,
+  getDutyExchangesByUserId
 };
