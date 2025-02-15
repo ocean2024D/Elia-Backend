@@ -5,40 +5,36 @@ const Duty = require("../models/dutyModel");
 // POST - Créer une nouvelle demande d'échange de garde
 const createDutyExchange = async (req, res) => {
   try {
-    const newDutyExchange = new DutyExchange(req.body);
-    const savedDutyExchange = await newDutyExchange.save();
-   return res.status(201).json(savedDutyExchange);
-  } catch (error) {
- res.status(500).json({ message: error.message });
-  };
-    // const dutyExchange = await DutyExchange.findById(req.params.id);
+   
+    for (let shift of req.body.Days) {
+      const existingExchange = await DutyExchange.findOne({
+        "Days.date": shift.date,
+        "Days.requestStartTime": shift.requestStartTime,
+        "Days.requestEndTime": shift.requestEndTime
+      });
 
-    // if (!dutyExchange || dutyExchange.status !== 'pending') {
-    //   return res.status(404).send('No valid offer found');
-    // }
-
-    // dutyExchange.status = 'accepted'; //
-    // dutyExchange.acceptingUser = req.body.acceptingUserId;
-
-    // await dutyExchange.save();
-// Récupération des utilisateurs
-    const requestingUser = await User.findById(DutyExchange.requestingUser);
-    const acceptingUser = await User.findById(DutyExchange.acceptingUser);
+      if (existingExchange) {
+        return res.status(400).send("This date and time range already exists in the system.");
+      }
+    }
+    const requestingUser = await User.findById(req.body.requestingUser);
+    const acceptingUser = await User.findById(req.body.acceptingUser);
 
     if (!requestingUser || !acceptingUser) {
       return res.status(404).send("One or both users not found");
     }
-
-    // Mise à jour des heures
-    requestingUser.negativeHours += 1; // 1 à modifier en fonction du nombre d'heures échangées
-    acceptingUser.positiveHours += 1; 
+    requestingUser.negativeHours += 1; 
+    acceptingUser.positiveHours += 1;
 
     await requestingUser.save();
     await acceptingUser.save();
 
-    res.status(200).send('Duty exchange accepted and hours updated!');
-  } 
+    return res.status(201).json(savedDutyExchange);
 
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 // GET - Récupérer toutes les demandes d'échange de garde
 const getAllDutyExchanges = async (req, res) => {
@@ -65,6 +61,11 @@ const getAllDutyExchanges = async (req, res) => {
 // GET - Récupérer une demande d'échange de garde par ID
 const getDutyExchangeById = async (req, res) => {
   try {
+      console.log("Request Body:", req.body); 
+    console.log("Duty ID:", req.body.duty_id);
+    console.log("Requesting User:", req.body.requestingUser);
+    console.log("Accepting User:", req.body.acceptingUser);
+    console.log("Days:", req.body.Days);
     const { exchangeId } = req.params;
     const dutyExchange = await DutyExchange.findById(exchangeId);
 
@@ -86,7 +87,6 @@ const acceptDutyRequest = async (req, res) => {
   try {
     const requestId = req.params.id;
 
-   
     const dutyExchange = await DutyExchange.findById(requestId)
       .populate("requestingUser", "name")
       .populate("acceptingUser", "name")
@@ -104,10 +104,10 @@ const acceptDutyRequest = async (req, res) => {
     dutyExchange.status = "accepted"; 
     await dutyExchange.save();
 
+    const requestingDutyId = dutyExchange.duty_id;
+    console.log("Requesting Duty ID:", requestingDutyId);
 
     const requestingDuty = await Duty.findById(dutyExchange.duty_id);
-    console.log("Requested Duty:", requestingDuty);
-
     if (!requestingDuty) {
       return res.status(404).send("Requesting duty not found");
     }
@@ -116,20 +116,34 @@ const acceptDutyRequest = async (req, res) => {
       return res.status(404).send("No dailyShifts found in requesting duty");
     }
 
-    dutyExchange.Days.forEach((shift) => {
+    
+    let updatePromises = dutyExchange.Days.map(async (shift) => {
       console.log(`dutyExchangeRequest inside: ${JSON.stringify(shift)}`);
 
-     
       let dutyShift = requestingDuty.days.find(d => d.date.toISOString() === shift.date.toISOString());
-      console.log(`dutyShift: ${JSON.stringify(dutyShift)}`);
-
       if (dutyShift) {
-        dutyShift.acceptedUser = req.body.acceptingUser;
+        dutyShift.assignedUser = req.body.acceptingUser;
         dutyShift.status = "sick"; 
+      }
+
+      const duty = await Duty.findById(dutyExchange.duty_id);
+      if (duty) {
+        duty.exchangeDetails.push({
+          requestingUser: shift.requestingUser,
+          acceptingUser: req.body.acceptingUser,
+          requestStartTime: shift.requestStartTime,  
+          requestEndTime: shift.requestEndTime,      
+          reasonOfChange: shift.reasonOfChange 
+     
+        });
+
+        return duty.save(); 
       }
     });
 
+    await Promise.all(updatePromises); 
     await requestingDuty.save();
+
     return res.send("Duty exchange accepted and shifts updated successfully");
 
   } catch (error) {
@@ -138,9 +152,11 @@ const acceptDutyRequest = async (req, res) => {
   }
 };
 
+
 module.exports = {
   createDutyExchange,
   getAllDutyExchanges,
   getDutyExchangeById,
   acceptDutyRequest,
+
 };
