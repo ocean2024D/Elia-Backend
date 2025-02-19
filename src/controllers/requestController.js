@@ -5,23 +5,53 @@ const Duty = require("../models/dutyModel");
 // POST - Créer une nouvelle demande d'échange de garde
 const createDutyExchange = async (req, res) => {
   try {
-   
     for (let shift of req.body.Days) {
       const existingExchange = await DutyExchange.findOne({
         "Days.date": shift.date,
         "Days.requestStartTime": shift.requestStartTime,
-        "Days.requestEndTime": shift.requestEndTime
+        "Days.requestEndTime": shift.requestEndTime,
       });
 
       if (existingExchange) {
-        return res.status(400).send("This date and time range already exists in the system.");
+        return res
+          .status(400)
+          .send("This date and time range already exists in the system.");
       }
     }
+    const duty = await Duty.findById(req.body.duty_id);
+    if (!duty) {
+      return res.status(404).send("Duty not found.");
+    }
+    const { startDate, endDate } = duty;
+    if (!startDate || !endDate) {
+      return res
+        .status(400)
+        .send("Start and End date are missing in the Duty.");
+    }
+    for (let shift of req.body.Days) {
+      const requestStartTime = new Date(shift.requestStartTime);
+      const requestEndTime = new Date(shift.requestEndTime);
+      if (requestStartTime < startDate || requestEndTime > endDate) {
+        return res
+          .status(400)
+          .send(
+            "Request start and end time must be within the duty week range."
+          );
+      }
+      console.log("Duty startDate: ", startDate, " endDate: ", endDate);
+      console.log(
+        "Request start: ",
+        requestStartTime,
+        " Request end: ",
+        requestEndTime
+      );
+    }
+
     const requestingUser = await User.findById(req.body.requestingUser);
     const acceptingUser = await User.findById(req.body.acceptingUser);
 
-    if (!requestingUser || !acceptingUser) {
-      return res.status(404).send("One or both users not found");
+    if (!requestingUser ) {
+      return res.status(404).send("RequestingUser not found");
     }
     requestingUser.negativeHours += 1; 
     acceptingUser.positiveHours += 1;
