@@ -2,12 +2,16 @@ const mongoose = require("mongoose");
 const Duty = require("../models/dutyModel");
 const User = require("../models/userModel");
 
-// Fonction pour générer un planning de gardes pour 6 semaines
 const generateDutySchedule = async () => {
-    try {
-    const users = await User.find({});
-    if (users.length < 6) {
-      console.error("At least 6 users are required for a full duty cycle.");
+  try {
+    //grouping the users
+
+    const usersByZone = await User.aggregate([
+      { $group: { _id: "$zone", users: { $push: { _id: "$_id", name: "$name" } } } }
+    ]);
+
+    if (usersByZone.length === 0) {
+      console.error("any user found.");
       return;
     }
 
@@ -17,48 +21,59 @@ const generateDutySchedule = async () => {
       startDate.setUTCDate(startDate.getUTCDate() + 1);
     }
 
-    let duties = [];
+    let allDuties = [];
 
-    for (let i = 0; i < 52; i++) {
-      const userIndex = i % 6;
-      const user = users[userIndex];
+    // for every zone a new cycle
+    for (const zoneData of usersByZone) {
+      const { _id: zone, users } = zoneData;
 
-      const dutyStart = new Date(
-        startDate.getTime() + i * 7 * 24 * 60 * 60 * 1000
-      );
-      const dutyEnd = new Date(dutyStart.getTime() + 7 * 24 * 60 * 60 * 1000);
-
-      let days = [];
-      for (let j = 0; j < 7; j++) {
-        let dayDate = new Date(dutyStart);
-        dayDate.setUTCDate(dutyStart.getUTCDate() + j);
-
-        days.push({
-          date: dayDate.toISOString(),
-          assignedUser: user._id,
-          status: "guard",
-        });
+      if (users.length < 6) {
+        console.warn(`Zone ${zone} at least 6 user required`);
+        continue;
       }
 
+      for (let i = 0; i < 52; i++) {
+        const userIndex = i % users.length;
+        const user = users[userIndex]; 
 
-      duties.push({
-        weekNumber: i + 1,
-        startDate: dutyStart.toISOString(),
-        endDate: dutyEnd.toISOString(),
-        assignedUser: user._id,
-        status: "guard",
-        zone: user.zone || "Default Zone",
-        username: user.name || "Unknown",
-        days: days, 
-      });
+        const dutyStart = new Date(
+          startDate.getTime() + i * 7 * 24 * 60 * 60 * 1000
+        );
+        const dutyEnd = new Date(dutyStart.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+        let days = [];
+        for (let j = 0; j < 7; j++) {
+          let dayDate = new Date(dutyStart);
+          dayDate.setUTCDate(dutyStart.getUTCDate() + j);
+
+          days.push({
+            date: dayDate.toISOString(),
+            assignedUser: user._id,
+            username: user.name, 
+            status: "guard",
+          });
+        }
+
+        allDuties.push({
+          weekNumber: i + 1,
+          startDate: dutyStart.toISOString(),
+          endDate: dutyEnd.toISOString(),
+          assignedUser: user._id,
+          username: user.name,
+          status: "guard",
+          zone: zone || "Default Zone",
+          days: days,
+        });
+      }
     }
 
-    await Duty.insertMany(duties);
-    console.log("Duty schedule successfully generated with day names!");
+    await Duty.insertMany(allDuties);
+    console.log("successfully generated the schedule");
   } catch (error) {
     console.error("Error generating the schedule:", error);
   }
 };
+
 
 const initializeSchedule = async () => {
   try {
