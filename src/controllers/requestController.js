@@ -1,9 +1,9 @@
-const User = require('../models/userModel');
+const User = require("../models/userModel");
 const DutyExchange = require("../models/requestModel");
 const Duty = require("../models/dutyModel");
 
 // POST - Créer une nouvelle demande d'échange de garde
-const createDutyExchange = async (req, res) => {
+/*const createDutyExchange = async (req, res) => {
   try {
     for (let shift of req.body.Days) {
       const existingExchange = await DutyExchange.findOne({
@@ -60,9 +60,55 @@ const createDutyExchange = async (req, res) => {
     await acceptingUser.save();
     const savedDutyExchange = await DutyExchange.create(req.body);
 
-    return res.status(201).json(savedDutyExchange);
 
+    res.status(200).send('Duty exchange accepted and hours updated!');
+  } */
+//////////////////////////////////////////////////////////////////////
+// Create duty with requesting user set from logged in user
+const createDutyExchange = async (req, res) => {
+  try {
+    const { requestingUser, acceptingUser, Days, reasonOfExChange } = req.body;
+
+    // Ensure requestingUser is included
+    if (!requestingUser) {
+      return res.status(400).json({ message: "Requesting user is required." });
+    }
+
+    const newRequest = new DutyExchange({
+      requestingUser,
+      acceptingUser: acceptingUser || null, // If null, request is open to all
+      status: "pending",
+      Days,
+      reasonOfExChange,
+    });
+
+    await newRequest.save();
+    res.status(201).json(newRequest);
   } catch (error) {
+    console.error("Error creating duty exchange:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+///////////////////////////////////////////////////////////////////////////////////////
+//New Api to get the db requests into the homepage
+const getShiftRequestsForUser = async (req, res) => {
+  try {
+    const { zone, userId } = req.params;
+
+    const requests = await DutyExchange.find({
+      $or: [
+        { acceptingUser: null }, // Open request, visible to all in the zone
+        { acceptingUser: userId }, // Request assigned to the user
+        { requestingUser: userId }, // User made the request
+      ],
+    })
+      .populate("requestingUser", "name")
+      .populate("acceptingUser", "name");
+
+    res.status(200).json(requests);
+  } catch (error) {
+    console.error("Error fetching shift requests:", error);
+
     res.status(500).json({ message: error.message });
   }
 };
@@ -75,21 +121,24 @@ const createDutyExchange = async (req, res) => {
 
 const getAllDutyExchanges = async (req, res) => {
   try {
-  const status = req.query.status || "pending";
-    const dutyExchanges = await DutyExchange.find({status})
-      .populate("requestingUser", "name")
-      .populate("acceptingUser", "name");
+
+    const dutyExchanges = await DutyExchange.find().populate(
+      "requestingUser",
+      "name"
+    );
 
     dutyExchanges.forEach((exchange) => {
-    if (exchange.requestingUser) {
-    exchange.requestingUser = exchange.requestingUser.name;
-    }
-
-    if (exchange.acceptingUser) {
-    exchange.acceptingUser = exchange.acceptingUser.name;
-   }
-  if (exchange.chois) {
-    exchange.chois = exchange.chois;  
+      if (exchange.requestingUser) {
+        exchange.requestingUser = exchange.requestingUser.name;
+      }
+      if (exchange.acceptingUser) {
+        exchange.acceptingUser = exchange.acceptingUser.name;
+        delete exchange.acceptingUser;
+      }
+    });
+    return res.status(200).json(dutyExchanges);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
   }
   });
 
@@ -119,40 +168,13 @@ const getDutyExchangeById = async (req, res) => {
       return res.status(404).json({ message: "Duty exchange not found" });
     }
 
-   return res.status(200).json(dutyExchange);
+    return res.status(200).json(dutyExchange);
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 };
 
-const getDutyExchangesByUserId = async (req, res) => {
-  try {
-    const userId = req.params.userId; 
-    const dutyExchanges = await DutyExchange.find({
-      $or: [
-        { "requestingUser": userId },
-        { "acceptingUser": userId }
-      ]
-    })
-      .populate("requestingUser", "name")
-      .populate("acceptingUser", "name");
-
-    if (!dutyExchanges || dutyExchanges.length === 0) {
-      return res.status(404).send("No duty exchanges found for this user");
-    }
-    return res.status(200).json(dutyExchanges);
-
-  } catch (error) {
-    console.error("Error fetching duty exchanges:", error);
-    return res.status(500).json({ message: error.message });
-  }
-};
-
-
-
-const mongoose = require('mongoose');
-
-
+const mongoose = require("mongoose");
 
 
 const acceptDutyRequest = async (req, res) => {
@@ -168,18 +190,20 @@ const acceptDutyRequest = async (req, res) => {
       return res.status(404).send("No valid offer found");
     }
 
-    if (!req.body.acceptingUser || !mongoose.Types.ObjectId.isValid(req.body.acceptingUser)) {
+    if (
+      !req.body.acceptingUser ||
+      !mongoose.Types.ObjectId.isValid(req.body.acceptingUser)
+    ) {
       return res.status(400).send("Valid accepting user ID is required");
     }
 
     dutyExchange.acceptingUser = req.body.acceptingUser;
-    dutyExchange.status = "accepted"; 
+    dutyExchange.status = "accepted";
     await dutyExchange.save();
 
-    const requestingDutyId = dutyExchange.duty_id;
-    console.log("Requesting Duty ID:", requestingDutyId);
-
     const requestingDuty = await Duty.findById(dutyExchange.duty_id);
+    console.log("Requested Duty:", requestingDuty);
+
     if (!requestingDuty) {
       return res.status(404).send("Requesting duty not found");
     }
@@ -188,46 +212,35 @@ const acceptDutyRequest = async (req, res) => {
       return res.status(404).send("No dailyShifts found in requesting duty");
     }
 
-    
-    let updatePromises = dutyExchange.Days.map(async (shift) => {
+    dutyExchange.Days.forEach((shift) => {
       console.log(`dutyExchangeRequest inside: ${JSON.stringify(shift)}`);
 
-      let dutyShift = requestingDuty.days.find(d => d.date.toISOString() === shift.date.toISOString());
+      let dutyShift = requestingDuty.days.find(
+        (d) => d.date.toISOString() === shift.date.toISOString()
+      );
+      console.log(`dutyShift: ${JSON.stringify(dutyShift)}`);
+
       if (dutyShift) {
-        dutyShift.assignedUser = req.body.acceptingUser;
-        dutyShift.status = shift.reasonOfChange ; 
-      }
-
-      const duty = await Duty.findById(dutyExchange.duty_id);
-      if (duty) {
-        duty.exchangeDetails.push({
-          requestingUser: shift.requestingUser,
-          acceptingUser: req.body.acceptingUser,
-          requestStartTime: shift.requestStartTime,  
-          requestEndTime: shift.requestEndTime,      
-          reasonOfChange: shift.reasonOfChange 
-     
-        });
-
-        return duty.save(); 
+        dutyShift.acceptedUser = req.body.acceptingUser;
+        dutyShift.status = "sick";
       }
     });
 
-    await Promise.all(updatePromises); 
     await requestingDuty.save();
-
     return res.send("Duty exchange accepted and shifts updated successfully");
-
   } catch (error) {
     console.error("Error updating duty exchange:", error);
     return res.status(500).send("Internal server error");
   }
 };
 
+//accept or reject shifts
+
+
 module.exports = {
   createDutyExchange,
   getAllDutyExchanges,
   getDutyExchangeById,
   acceptDutyRequest,
-  getDutyExchangesByUserId
+  getShiftRequestsForUser,
 };
