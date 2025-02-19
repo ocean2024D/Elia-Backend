@@ -9,6 +9,7 @@ const authRoutes = require("./src/routers/authRoutes")
 const dutyExchangeRoutes = require("./src/routers/requestRoutes")
 const dutyRoutes = require("./src/routers/dutyRoutes")
 const dutySchedulerRoutes = require("./src/routers/dutySchedulerRoutes")
+const adminRoutes = require("./src/routers/adminRoutes")
 const errorHandlerMiddleware = require("./src/middelwares/errorHandler")
 const cors = require("cors")
 
@@ -36,7 +37,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/dutyExchange",dutyExchangeRoutes);
 app.use("/api/duties", dutyRoutes);
 app.use("/api/dutyScheduler", dutySchedulerRoutes);
-
+app.use("/api/admin", adminRoutes);
 app.get("/", (req, res) => {
   res.json({ message: "Bienvenue" });
 });
