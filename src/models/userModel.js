@@ -36,10 +36,8 @@ const userSchema = new mongoose.Schema(
   { collection: "users", timestamps: true }
 );
 
-
-
 // module.exports = User;
 
-const user = mongoose.model("user", userSchema)
+const user = mongoose.model("user", userSchema);
 
-module.exports = user // ca fait crash si il est grand letter (User)
+module.exports = user; // ca fait crash si il est grand letter (User)

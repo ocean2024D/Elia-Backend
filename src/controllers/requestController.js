@@ -1,4 +1,4 @@
-const User = require("../models/userModel");
+const user = require("../models/userModel");
 const DutyExchange = require("../models/requestModel");
 const Duty = require("../models/dutyModel");
 
@@ -141,8 +141,8 @@ const getShiftRequestsForUser = async (req, res) => {
 const getAllDutyExchanges = async (req, res) => {
   try {
     const dutyExchanges = await DutyExchange.find()
-      .populate("requestingUser", "name") // ✅ Get the name of the requester
-      .populate("acceptingUser", "name"); // ✅ Get the name of the acceptor
+      .populate("requestingUser", "name") // Get the name of the requester
+      .populate("acceptingUser", "name"); // Get the name of the acceptor
 
     dutyExchanges.forEach((exchange) => {
       if (exchange.requestingUser) {
@@ -150,36 +150,27 @@ const getAllDutyExchanges = async (req, res) => {
       }
       if (exchange.acceptingUser) {
         exchange.acceptingUser = exchange.acceptingUser.name;
-        delete exchange.acceptingUser;
       }
     });
+
     return res.status(200).json(dutyExchanges);
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
-  });
-
-return res.status(200).json(dutyExchanges);
-} catch (error) {
-return res.status(500).json({ message: error.message });
-}
 };
-
-
-
 
 // GET - Récupérer une demande d'échange de garde par ID
 const getDutyExchangeById = async (req, res) => {
   try {
-      console.log("Request Body:", req.body); 
+    console.log("Request Body:", req.body);
     console.log("Duty ID:", req.body.duty_id);
     console.log("Requesting User:", req.body.requestingUser);
     console.log("Accepting User:", req.body.acceptingUser);
     console.log("Days:", req.body.Days);
     const { exchangeId } = req.params;
     const dutyExchange = await DutyExchange.findById(exchangeId)
-    .populate('acceptingUser', '_id name')
-    .populate('requestingUser', '_id name'); 
+      .populate("acceptingUser", "_id name")
+      .populate("requestingUser", "_id name");
 
     if (!dutyExchange) {
       return res.status(404).json({ message: "Duty exchange not found" });
@@ -192,7 +183,6 @@ const getDutyExchangeById = async (req, res) => {
 };
 
 const mongoose = require("mongoose");
-
 
 const acceptDutyRequest = async (req, res) => {
   try {
@@ -245,7 +235,6 @@ const acceptDutyRequest = async (req, res) => {
 };
 
 //accept or reject shifts
-
 
 module.exports = {
   createDutyExchange,

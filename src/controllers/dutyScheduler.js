@@ -1,13 +1,18 @@
 const mongoose = require("mongoose");
 const Duty = require("../models/dutyModel");
-const User = require("../models/userModel");
+const user = require("../models/userModel");
 
 const generateDutySchedule = async () => {
   try {
     //grouping the users
 
     const usersByZone = await User.aggregate([
-      { $group: { _id: "$zone", users: { $push: { _id: "$_id", name: "$name" } } } }
+      {
+        $group: {
+          _id: "$zone",
+          users: { $push: { _id: "$_id", name: "$name" } },
+        },
+      },
     ]);
 
     if (usersByZone.length === 0) {
@@ -34,7 +39,7 @@ const generateDutySchedule = async () => {
 
       for (let i = 0; i < 52; i++) {
         const userIndex = i % users.length;
-        const user = users[userIndex]; 
+        const user = users[userIndex];
 
         const dutyStart = new Date(
           startDate.getTime() + i * 7 * 24 * 60 * 60 * 1000
@@ -49,7 +54,7 @@ const generateDutySchedule = async () => {
           days.push({
             date: dayDate.toISOString(),
             assignedUser: user._id,
-            username: user.name, 
+            username: user.name,
             status: "guard",
           });
         }
@@ -74,7 +79,6 @@ const generateDutySchedule = async () => {
   }
 };
 
-
 const initializeSchedule = async () => {
   try {
     const existingDuties = await Duty.countDocuments();
@@ -89,5 +93,4 @@ const initializeSchedule = async () => {
   }
 };
 
-
-module.exports = {initializeSchedule };
+module.exports = { initializeSchedule };
