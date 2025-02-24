@@ -5,8 +5,8 @@ Un serveur **Express.js** avec gestion des utilisateurs et des tâches, utilisan
 ## 📌 Fonctionnalités  
 ✅ Authentification des utilisateurs  
 ✅ Gestion des demandes d'échange de tâches  
-❌ Gestion des tâches et planification  
-❌ Formatage de l'heure pour le fuseau Europe/Brussels  
+✅ Gestion des tâches et planification  
+✅ Formatage de l'heure pour le fuseau Europe/Brussels  
 ✅ Middleware global de gestion des erreurs  
 
 ---
