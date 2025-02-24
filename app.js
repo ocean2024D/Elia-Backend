@@ -1,36 +1,20 @@
-require("express-async-errors");
-const express = require("express");
-const app = express();
-require("dotenv").config();
-require("./src/db/dbConnection");
-const port = process.env.PORT || 5001;
-const authRoutes = require("./src/routers/authRoutes");
-const dutyExchangeRoutes = require("./src/routers/requestRoutes");
-const dutyRoutes = require("./src/routers/dutyRoutes");
-const dutySchedulerRoutes = require("./src/routers/dutySchedulerRoutes");
-const errorHandlerMiddleware = require("./src/middelwares/errorHandler");
-const cors = require("cors");
-//_____________________________________________________
-// dans le fichier app.js
-// const moment = require("moment-timezone")
-// moment.tz.setDefault("Europe/Brussels")
 
-// // dans le dossier utils //
-// import moment from "moment-timezone";
 
-// moment.tz.setDefault("Europe/Brussels");
+require("express-async-errors")
+const express = require("express")
+const app = express()
+require("dotenv").config()
+require("./src/db/dbConnection")
+const port = process.env.PORT || 5001
+const authRoutes = require("./src/routers/authRoutes")
+const dutyExchangeRoutes = require("./src/routers/requestRoutes")
+const dutyRoutes = require("./src/routers/dutyRoutes")
+const dutySchedulerRoutes = require("./src/routers/dutySchedulerRoutes")
+const adminRoutes = require("./src/routers/adminRoutes")
+const errorHandlerMiddleware = require("./src/middelwares/errorHandler")
+const cors = require("cors")
 
-// export const getBrusselsTime = () => {
-//     return moment().format("YYYY-MM-DD HH:mm:ss");
-// };
 
-// // import { getBrusselsTime } from "App/Utils/DateHelper";
-
-// Route.get("/", async () => {
-//     return { heure: getBrusselsTime() };
-// });
-
-//______________________________________________________
 
 //Middelwares
 app.use(express.json());
@@ -51,10 +35,10 @@ app.use(
 
 // Define Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/dutyExchange", dutyExchangeRoutes);
+app.use("/api/dutyExchange",dutyExchangeRoutes);
 app.use("/api/duties", dutyRoutes);
 app.use("/api/dutyScheduler", dutySchedulerRoutes);
-
+app.use("/api/admin", adminRoutes);
 app.get("/", (req, res) => {
   res.json({ message: "Bienvenue" });
 });

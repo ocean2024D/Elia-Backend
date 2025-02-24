@@ -39,8 +39,16 @@ const DutyExchangeSchema = new mongoose.Schema(
       type: String,
       enum: ["sick", "vacation", "others"],
     },
+    // exchangeDetails: [
+    //   {
+    //     requestingUser: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    //     acceptingUser: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    //     exchangeStart: { type: Date },
+    //     exchangeEnd: { type: Date }
+    //   }
+    // ]
   },
-  { collection: "dutiesExchange", timestamps: true }
+  { collection: "dutiesExchange", timestamps: true, versionKey: false }
 );
 
 module.exports = mongoose.model("DutyExchange", DutyExchangeSchema);
