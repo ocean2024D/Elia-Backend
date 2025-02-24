@@ -1,4 +1,4 @@
-const User = require("../models/userModel");
+const user = require("../models/userModel");
 const Duty = require("../models/dutyModel");
 
 const createDuties = async (req, res) => {
@@ -15,16 +15,35 @@ const getDutiesForUser = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    const duties = await Duty.find({ assignedUser: userId });
-    if (duties.length === 0) {
+    // Fetch duties where the user is assigned either at the week level OR in any individual day
+    const duties = await Duty.find({
+      $or: [
+        { assignedUser: userId }, // User assigned at the week level
+        { "days.assignedUser": userId }, // User assigned in any day's assignedUser
+      ],
+    }).populate("assignedUser", "name");
+
+    if (!duties || duties.length === 0) {
       return res.status(404).json({ message: "No duties found for this user" });
     }
 
-    res.status(200).json(duties);
+    // Extract only the days that belong to the user
+    const filteredDuties = duties.map((duty) => ({
+      _id: duty._id,
+      weekNumber: duty.weekNumber,
+      startDate: duty.startDate,
+      endDate: duty.endDate,
+      zone: duty.zone,
+      status: duty.status,
+      days: duty.days.filter((day) => day.assignedUser.toString() === userId), // Only show the user's assigned days
+    }));
+
+    res.status(200).json(filteredDuties);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 //Change with hours---> waiting modifications
 // ____________________________________________________________________________________
 const deleteDutiesForUser = async (req, res) => {
