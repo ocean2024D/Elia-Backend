@@ -11,6 +11,16 @@ Un serveur **Express.js** avec gestion des utilisateurs et des tâches, utilisan
 
 ---
 
+## 🛤️ Roadmap
+
+✅ Système de rotation automatique toutes les 6 semaines
+
+✅ Attribution d’une seule personne par semaine (actuel)
+
+🔄 Ajustement pour permettre plusieurs personnes par semaine
+
+🔄 Interface simplifiée pour que l’administrateur puisse modifier facilement le planning (ajout/suppression de membres)
+
 ## 🛠️ Pré-requis  
 
 - [Node.js](https://nodejs.org/) installé  
