@@ -21,6 +21,14 @@ Un serveur **Express.js** avec gestion des utilisateurs et des tâches, utilisan
 
 🔄 Interface simplifiée pour que l’administrateur puisse modifier facilement le planning (ajout/suppression de membres)
 
+🔄 Ajout d’une section statistiques pour l’administrateur avec un graphique affichant les heures positives et négatives
+
+🔄 Priorisation des échanges vers les personnes ayant des heures négatives pour équilibrer la répartition des tâches
+
+🔄 Possibilité de refuser un échange de garde X fois par an.
+
+🔄 Ajout de notifications pour informer les utilisateurs des attributions, des échanges et des modifications du planning
+
 ## 🛠️ Pré-requis  
 
 - [Node.js](https://nodejs.org/) installé  
